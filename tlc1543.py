@@ -63,13 +63,15 @@ class TLC(object):
             self.low()
             sleep(self.SLEEPTIME)
         return self.convert()
+
+
 if __name__ == '__main__':
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
     try:
+        adc = TLC(6)
         while True:
-            adc = TLC(6)
             print(adc.read())
 
     finally:
