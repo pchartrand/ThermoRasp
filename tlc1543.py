@@ -1,6 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding:utf-8 -*-
 import RPi.GPIO as GPIO
+from gpiozero import LED
 from time import sleep
 from datetime import datetime as dt
 
@@ -51,7 +52,7 @@ class TLC(object):
         GPIO.output(self.CS, GPIO.LOW)
         self.cycle()
         self.cycle()
-        for i in range(16):
+        for i in range(14):
             self.high()
             if i < 4:
                 self.adress(i)
@@ -65,16 +66,58 @@ class TLC(object):
         return self.convert()
 
 
+def convert_to_temperature(value):
+    '''
+    Assuming a third degree polynomial relationship between voltage
+    and temperature with a voltage divider made of an ntc
+    thermistor (pullup) and a 5k6 resistor (to ground).
+    Voltage measured across the 5k6 resistor.
+    '''
+    REFERENCE_VOLTS = 5.04
+    A = 3.296
+    B = -22.378
+    C = 70.951
+    D = -49.382
+    volts = (value / 1023.0) * REFERENCE_VOLTS;
+    return A*volts**3 + B*volts**2 + C*volts + D
+
+
+class Thermostat(object):
+    def __init__(self, target, hysteresis=0.5):
+        self.target = target
+        self.hysteresis = hysteresis
+        self.heating = False
+
+    def heat(self, temperature):
+        if self.heating:
+            target = self.target + self.hysteresis
+            self.heating = False if temperature > target else True
+        else:
+            target = self.target - self.hysteresis
+            self.heating = True if temperature < target else False
+        return self.heating
+
+
 if __name__ == '__main__':
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
+    led = LED(17)
     try:
         adc = TLC(6)
+        thermostat  = Thermostat(20, 0.5)
         while True:
-            print(adc.read())
+            value = adc.read()
+            temperature = convert_to_temperature(value)
+            heating = thermostat.heat(temperature)
+            heat = 'heating' if heating else ''
+            if heating:
+                led.on()
+            else:
+                led.off()
+            print("{:%Y %m %d %H:%M:%S} {:04d} {:.1f} {}".format(dt.now(), value, temperature, heat))
+            #sleep(1)
 
     finally:
         GPIO.cleanup()
-
 
