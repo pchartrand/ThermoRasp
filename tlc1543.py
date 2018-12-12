@@ -18,7 +18,7 @@ if __name__ == '__main__':
         while True:
             value = adc.read()
             temperature = convert_to_temperature(value)
-            heating = thermostat.heat(temperature)
+            heating = thermostat.set(temperature)
             heat = 'heating' if heating else ''
             if heating:
                 led.on()
