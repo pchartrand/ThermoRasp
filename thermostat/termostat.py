@@ -3,7 +3,7 @@ class Thermostat(object):
         self.set_target(target, hysteresis)
         self.heating = False
 
-    def set(self, temperature):
+    def check(self, temperature):
         if self.heating:
             target = self.target + self.hysteresis
             self.heating = False if temperature > target else True
