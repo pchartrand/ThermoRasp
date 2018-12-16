@@ -1,14 +1,13 @@
 #!/usr/bin/env python
-from gpiozero import LED
 import json
 from flask import Flask, render_template, request, make_response, url_for, redirect
 from thermostat.ntc import convert_to_temperature
-from thermostat.tlc import TLC, GPIO
+from thermostat.adc import TLC, gpio_setup, gpio_cleanup
 from thermostat.termostat import Thermostat
+from thermostat.relay import Relay
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(True)
-led = LED(17)
+gpio_setup()
+relay = Relay(17)
 adc = TLC(6)
 thermostat = Thermostat(20, 0.5)
 app = Flask(__name__)
@@ -79,9 +78,9 @@ def set_target():
 def check():
     heating = thermostat.check(convert_to_temperature(adc.read()))
     if heating:
-        led.on()
+        relay.on()
     else:
-        led.off()
+        relay.off()
     return redirect(url_for('show_status'))
 
 
@@ -89,4 +88,4 @@ if __name__ == '__main__':
     try:
         app.run(host='0.0.0.0', debug=True)
     finally:
-        GPIO.cleanup()
+        gpio_cleanup()

@@ -3,14 +3,14 @@
 from gpiozero import LED
 from datetime import datetime as dt
 
-from thermostat.tlc import TLC, GPIO
+from thermostat.adc import TLC, gpio_setup, gpio_cleanup
 from thermostat.termostat import Thermostat
 from thermostat.ntc import convert_to_temperature
+from thermostat.relay import LED
 
 
 if __name__ == '__main__':
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(True)
+    gpio_setup()
     led = LED(17)
     try:
         adc = TLC(6)
@@ -28,5 +28,5 @@ if __name__ == '__main__':
             #sleep(1)
 
     finally:
-        GPIO.cleanup()
+        gpio_cleanup()
 

@@ -1,13 +1,19 @@
 # ThermoRasp
-Thermostat made with an ARPI600 board on a raspberrypi 2
+Thermostat made with a ARPI600 board on a raspberrypi 2.
+Uses a ntc and a 5k6 resistor for temperature measurement,
+and a SSRNC-430B solid-state relay with a 68 Ω series resistor for heater control.     
 
-## to use:
+## Testing:
+
+`./test.py`
+
+## Usage:
 
 Start flask server
 
-`nohup python app.py &`
+`./startup.sh`
 
-Start polling process
+Start polling process (checks temperature once a minute)
 
 `nohup poll.sh &`
 

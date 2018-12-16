@@ -3,6 +3,15 @@ from time import sleep
 import RPi.GPIO as GPIO
 
 
+def gpio_setup():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(True)
+
+
+def gpio_cleanup():
+    GPIO.cleanup()
+
+
 class TLC(object):
     CLOCK = 16
     ADDRESS = 20
