@@ -1,7 +1,24 @@
 # ThermoRasp
 Thermostat made with a ARPI600 board on a raspberrypi 2.
-Uses a ntc and a 5k6 resistor for temperature measurement,
-and a SSRNC-430B solid-state relay with a 68 Ω series resistor for heater control.     
+
+## Requirements:
+
+A 310 NTC thermistor and a 5k6 resistor for temperature measurement.
+
+A SSRNC-430B solid-state relay with a 68 Ω series resistor for heater control. 
+
+### Note:
+
+You will need to add a connection between TLC1453 chip select (CS) pin and GPIO 
+pin 19 to allow accurate temperature measurements. CS is not connected to the ARPI600 
+board, so the measured values are erratic.
+
+## Principle of operation:
+
+The flask application integrates the different components 
+(adc, temperature calculation, relay control, thermostat logic).
+
+It makes system status and control possible thru a REST API.
 
 ## Testing:
 
