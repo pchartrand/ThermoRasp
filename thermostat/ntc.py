@@ -9,7 +9,7 @@ def convert_to_temperature(value):
     More info here
     https://github.com/pchartrand/temperature-monitor/blob/master/Samples/ntc_measurements_and_polynomial_regression.png
 
-    This is more empirical than the Steinhart–Hart coefficients approach,
+    This is more empirical than the Steinhart-Hart coefficients approach,
     but yields good results in normal temperature ranges.
 
     https://en.wikipedia.org/wiki/Steinhart%E2%80%93Hart_equation
