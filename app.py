@@ -23,7 +23,11 @@ def get_target():
 
 
 def get_temperature():
-    return "{:.1f}".format(convert_to_temperature(adc.read()))
+    return convert_to_temperature(adc.read())
+
+
+def get_formatted_temperature():
+    return "{:.1f}".format(get_temperature())
 
 
 def is_heating():
@@ -31,7 +35,7 @@ def is_heating():
 
 
 def should_heat():
-    return thermostat.check(convert_to_temperature(adc.read()))
+    return thermostat.check(get_temperature())
 
 
 def get_scheduled_temperature():
@@ -40,7 +44,7 @@ def get_scheduled_temperature():
 
 def series_to_json(series):
     as_json = []
-    for n, serie  in enumerate(series):
+    for n, serie in enumerate(series):
         serie_as_json = []
         for point in serie:
             date_value = time_to_minutes(point[0])
@@ -88,7 +92,7 @@ def show_heating():
 def show_temperature():
     return app.response_class(
         response=json.dumps(
-            {"temperature": get_temperature()}
+            {"temperature": get_formatted_temperature()}
         ),
         status=200,
         mimetype='application/json'
@@ -99,7 +103,7 @@ def show_temperature():
 def show_status():
     return app.response_class(
         response=json.dumps(
-            {"target": get_target(), "heating": is_heating(), "temperature": get_temperature()}
+            {"target": get_target(), "heating": is_heating(), "temperature": get_formatted_temperature()}
         ),
         status=200,
         mimetype='application/json'
@@ -115,7 +119,7 @@ def send_schedule():
         for time, event in schedule.schedule[day].items():
             dt = event_in_week(week_start, day, event)
             serie.append((dt, event.temperature))
-    series_as_json = series_to_json([serie,current])
+    series_as_json = series_to_json([serie, current])
 
     return app.response_class(
         response=json.dumps(series_as_json),
