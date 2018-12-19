@@ -1,17 +1,14 @@
 #!/usr/bin/env python
-import datetime
 import json
 import os
-from flask import Flask, render_template, request, make_response, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect
 from thermostat.ntc import convert_to_temperature
 from thermostat.adc import TLC, gpio_setup, gpio_cleanup
 from thermostat.termostat import Thermostat
 from thermostat.relay import Relay
 from scheduling.schedule import read_schedule
+from scheduling.timeutils import now, weekstart, event_in_week, time_to_seconds, time_to_minutes
 
-
-DATETIME_SECONDS = '%Y-%m-%d %H:%M:%S'
-DATETIME_MINUTES = '%Y-%m-%d %H:%M'
 
 gpio_setup()
 relay = Relay(17)
@@ -29,16 +26,16 @@ def get_temperature():
     return "{:.1f}".format(convert_to_temperature(adc.read()))
 
 
-def get_heating():
+def is_heating():
     return thermostat.heating
 
 
-def now():
-    return datetime.datetime.now()+ datetime.timedelta(hours=-5)
+def should_heat():
+    return thermostat.check(convert_to_temperature(adc.read()))
 
 
-def get_time():
-    return now().strftime(DATETIME_SECONDS)
+def get_scheduled_temperature():
+    return schedule.get_temperature_for(now())
 
 
 def series_to_json(series):
@@ -46,7 +43,7 @@ def series_to_json(series):
     for n, serie  in enumerate(series):
         serie_as_json = []
         for point in serie:
-            date_value = point[0].strftime(DATETIME_MINUTES)
+            date_value = time_to_minutes(point[0])
             value = round(point[1], 1)
             serie_as_json.append(
                 dict(
@@ -56,6 +53,15 @@ def series_to_json(series):
             )
         as_json.append(serie_as_json)
     return as_json
+
+
+@app.route('/', methods=['GET'])
+def show_schedule():
+    current_target_temperature = get_scheduled_temperature()
+    if current_target_temperature != thermostat.target:
+        print("setting temperature to {}".format(current_target_temperature))
+        thermostat.set_target(float(current_target_temperature))
+    return render_template('schedule.html', schedule=schedule, date_time=time_to_seconds())
 
 
 @app.route('/target', methods=['GET'])
@@ -71,7 +77,7 @@ def show_target():
 def show_heating():
     return app.response_class(
         response=json.dumps(
-            {"heating": get_heating()}
+            {"heating": is_heating()}
         ),
         status=200,
         mimetype='application/json'
@@ -93,31 +99,21 @@ def show_temperature():
 def show_status():
     return app.response_class(
         response=json.dumps(
-            {"target": get_target(), "heating": get_heating(), "temperature": get_temperature()}
+            {"target": get_target(), "heating": is_heating(), "temperature": get_temperature()}
         ),
         status=200,
         mimetype='application/json'
     )
 
 
-@app.route('/', methods=['GET'])
-def show_schedule():
-    current_target_temperature = schedule.get_temperature_for(now())
-    if current_target_temperature != thermostat.target:
-        print("setting temperature to {}".format(current_target_temperature))
-        thermostat.set_target(float(current_target_temperature))
-    return render_template('schedule.html', schedule=schedule, date_time=get_time())
-
-
 @app.route('/schedule-data.json', methods=['GET'])
 def send_schedule():
     serie = []
     current = []
-    now =  datetime.datetime.now()
-    week_start = now - datetime.timedelta(hours=now.hour, minutes=now.minute,days=now.weekday())
+    week_start = weekstart(now())
     for day in schedule.schedule:
         for time, event in schedule.schedule[day].items():
-            dt = week_start + datetime.timedelta(days=day,hours=event.hour,minutes=event.minute)
+            dt = event_in_week(week_start, day, event)
             serie.append((dt, event.temperature))
     series_as_json = series_to_json([serie,current])
 
@@ -126,6 +122,7 @@ def send_schedule():
         status=200,
         mimetype='application/json'
     )
+
 
 @app.route('/set', methods=['PUT'])
 def set_target():
@@ -136,8 +133,7 @@ def set_target():
 
 @app.route('/check', methods=['POST'])
 def check():
-    heating = thermostat.check(convert_to_temperature(adc.read()))
-    if heating:
+    if should_heat():
         relay.on()
     else:
         relay.off()

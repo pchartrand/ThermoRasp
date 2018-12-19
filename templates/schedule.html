@@ -17,38 +17,7 @@
     <script src='static/js/libs/jquery/3.1.0/jquery.min.js'></script>
     {%endif %}
     <script src="static/js/libs/d3js/d3.v4.min.js"></script>
-    {%if dev_version %}
-    <script src='static/js/mg-dev/MG.js'></script>
-    <script src='static/js/mg-dev/misc/utility.js'></script>
-    <script src='static/js/mg-dev/common/data_graphic.js'></script>
-    <script src='static/js/mg-dev/common/hooks.js'></script>
-    <script src='static/js/mg-dev/common/register.js'></script>
-    <script src='static/js/mg-dev/common/bootstrap_tooltip_popover.js'></script>
-    <script src='static/js/mg-dev/common/scales.js'></script>
-    <script src='static/js/mg-dev/common/chart_title.js'></script>
-    <script src='static/js/mg-dev/common/y_axis.js'></script>
-    <script src='static/js/mg-dev/common/x_axis.js'></script>
-    <script src='static/js/mg-dev/common/scales.js'></script>
-    <script src='static/js/mg-dev/common/init.js'></script>
-    <script src='static/js/mg-dev/common/markers.js'></script>
-    <script src='static/js/mg-dev/common/rollover.js'></script>
-    <script src='static/js/mg-dev/common/window_listeners.js'></script>
-    <script src='static/js/mg-dev/layout/bootstrap_dropdown.js'></script>
-    <script src='static/js/mg-dev/layout/button.js'></script>
-    <script src='static/js/mg-dev/charts/line.js'></script>
-    <script src='static/js/mg-dev/charts/histogram.js'></script>
-    <script src='static/js/mg-dev/charts/point.js'></script>
-    <script src='static/js/mg-dev/charts/bar.js'></script>
-    <script src='static/js/mg-dev/charts/table.js'></script>
-    <script src='static/js/mg-dev/charts/missing.js'></script>
-    <script src='static/js/mg-dev/misc/process.js'></script>
-    <script src='static/js/mg-dev/misc/smoothers.js'></script>
-    <script src='static/js/mg-dev/misc/formatters.js'></script>
-    <script src='static/js/mg-dev/misc/transitions.js'></script>
-    <script src='static/js/mg-dev/misc/error.js'></script>
-    {% else %}
     <script src='static/js/libs/metricsgraphics.min.js'></script>
-    {% endif %}
 </head>
 <body>
 
@@ -135,7 +104,7 @@
             }
 
             MG.data_graphic({
-                title: "Températures",
+                title: "Températures {{date_time }}",
                 description: "Chauffage pour la semaine",
                 data: data,
                 width: 1000,
