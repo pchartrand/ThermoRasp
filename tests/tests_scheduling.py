@@ -4,50 +4,6 @@ from freezegun import freeze_time
 from scheduling.schedule import Schedule, Event, read_schedule
 
 
-class EventTests(TestCase):
-    def test_can_create_an_event(self):
-        event = Event(8, 30, 17)
-        assert event.temperature == 17
-        assert event.minute == 30
-        assert event.hour == 8
-        assert event.get_time() == '08:30'
-
-    def test_event_hour_is_valid(self):
-        try:
-            Event(25, 30, 17)
-            raise Exception("should have raised an assertion error")
-        except AssertionError:
-            pass
-
-    def test_event_minute_is_valid(self):
-        try:
-            Event(5, 60, 17)
-            raise Exception("should have raised an assertion error")
-        except AssertionError:
-            pass
-
-    def test_event_temperature_is_not_to_high(self):
-        try:
-            Event(5, 30, 26)
-            raise Exception("should have raised an assertion error")
-        except AssertionError:
-            pass
-
-    def test_event_temperature_is_not_too_low(self):
-        try:
-            Event(5, 30, 4)
-            raise Exception("should have raised an assertion error")
-        except AssertionError:
-            pass
-
-    def test_can_get_an_ordered_list_of_days(self):
-        schedule = Schedule()
-        days = schedule.days()
-        for wd in ( 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'):
-            w = days.pop(0)
-            self.assertEqual(wd, w, "expected {} got {}".format(wd, w))
-
-
 class ScheduleTests(TestCase):
 
     def _create_schedule(self):
@@ -96,6 +52,13 @@ class ScheduleTests(TestCase):
                 freezed_time.stop()
                 self.assertEqual(target, temperature, "{} expected {}, got {}".format(date_time, target, temperature))
 
+    def test_can_get_an_ordered_list_of_days(self):
+        schedule = Schedule()
+        days = schedule.days()
+        for wd in ( 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'):
+            w = days.pop(0)
+            self.assertEqual(wd, w, "expected {} got {}".format(wd, w))
+            
     def test_can_convert_day_from_numeric_to_text_value(self):
         day_as_numeric = Schedule().wd('MON')
         day_as_code = Schedule().weekday(day_as_numeric)
@@ -114,8 +77,6 @@ class ScheduleTests(TestCase):
         for wd in ('SAT','SUN'):
             w = days.pop(0)
             self.assertEqual(wd, w, "expected {} got {}".format(wd, w))
-
-
 
     def test_can_create_a_schedule(self):
 
@@ -140,5 +101,5 @@ class ScheduleTests(TestCase):
         self.compare_schedule(schedule)
 
     def test_given_a_datetime_and_schedule_file_will_return_expected_temperature(self):
-        schedule = read_schedule('test_schedule.yml')
+        schedule = read_schedule('tests/test_schedule.yml')
         self.compare_schedule(schedule)
