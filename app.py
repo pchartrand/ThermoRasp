@@ -19,7 +19,10 @@ app = Flask(__name__)
 
 
 def get_target():
-    return "{:.1f}".format(thermostat.target)
+    return thermostat.target
+
+def get_formatted_target():
+    return "{:.1f}".format(get_target())
 
 
 def get_temperature():
@@ -42,6 +45,17 @@ def get_scheduled_temperature():
     return schedule.get_temperature_for(now())
 
 
+def set_target(target_temperature):
+    thermostat.set_target(target_temperature)
+
+
+def set_target_from_schedule():
+    target_temperature = get_scheduled_temperature()
+    if target_temperature != get_target():
+        print("setting temperature to {}".format(target_temperature))
+        set_target(target_temperature)
+
+
 def series_to_json(series):
     as_json = []
     for n, serie in enumerate(series):
@@ -61,17 +75,14 @@ def series_to_json(series):
 
 @app.route('/', methods=['GET'])
 def show_schedule():
-    current_target_temperature = get_scheduled_temperature()
-    if current_target_temperature != thermostat.target:
-        print("setting temperature to {}".format(current_target_temperature))
-        thermostat.set_target(float(current_target_temperature))
+    set_target_from_schedule()
     return render_template('schedule.html', schedule=schedule, date_time=time_to_seconds())
 
 
 @app.route('/target', methods=['GET'])
 def show_target():
     return app.response_class(
-        response=json.dumps({"target": get_target()}),
+        response=json.dumps({"target": get_formatted_target()}),
         status=200,
         mimetype='application/json'
     )
@@ -103,7 +114,7 @@ def show_temperature():
 def show_status():
     return app.response_class(
         response=json.dumps(
-            {"target": get_target(), "heating": is_heating(), "temperature": get_formatted_temperature()}
+            {"target": get_formatted_target(), "heating": is_heating(), "temperature": get_formatted_temperature()}
         ),
         status=200,
         mimetype='application/json'
@@ -137,6 +148,7 @@ def set_target():
 
 @app.route('/check', methods=['POST'])
 def check():
+    set_target_from_schedule()
     if should_heat():
         relay.on()
     else:
