@@ -45,7 +45,7 @@ def get_scheduled_temperature():
     return schedule.get_temperature_for(now())
 
 
-def set_target(target_temperature):
+def set_target_temperature(target_temperature):
     thermostat.set_target(target_temperature)
 
 
@@ -53,7 +53,7 @@ def set_target_from_schedule():
     target_temperature = get_scheduled_temperature()
     if target_temperature != get_target():
         print("setting temperature to {}".format(target_temperature))
-        set_target(target_temperature)
+        set_target_temperature(target_temperature)
 
 
 def series_to_json(series):
@@ -148,7 +148,7 @@ def set_target():
 
 @app.route('/check', methods=['POST'])
 def check():
-    set_target_from_schedule()
+    #set_target_from_schedule()
     if should_heat():
         relay.on()
     else:
