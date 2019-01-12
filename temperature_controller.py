@@ -37,6 +37,12 @@ class TemperatureController(object):
     def get_scheduled_temperature(self):
         return self.schedule.get_temperature_for(now())
 
+    def schedule_days(self):
+        return self.schedule.schedule
+
+    def schedule_day_events(self, day):
+        return self.schedule.schedule[day].items()
+
     def set_target_from_schedule(self):
         target_temperature = self.get_scheduled_temperature()
         if target_temperature != self.get_target():

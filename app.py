@@ -70,7 +70,7 @@ def show_target():
 @app.route('/target', methods=['PUT'])
 def set_target():
     temperature = request.json.get('target', tc.thermostat.target)
-    tc.thermostat.set_target(float(temperature))
+    tc.set_target_temperature(float(temperature))
     return redirect(url_for('show_target'))
 
 
@@ -111,8 +111,8 @@ def send_schedule():
     serie = []
     current = []
     week_start = weekstart(now())
-    for day in tc.schedule.schedule:
-        for time, event in tc.schedule.schedule[day].items():
+    for day in tc.schedule_days():
+        for time, event in tc.schedule_day_events(day):
             dt = event_in_week(week_start, day, event)
             serie.append((dt, event.temperature))
     series_as_json = series_to_json([serie, current])
