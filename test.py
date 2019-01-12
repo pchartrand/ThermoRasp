@@ -3,6 +3,7 @@
 from gpiozero import LED
 from datetime import datetime as dt
 
+from time import sleep
 from thermostat.adc import TLC, gpio_setup, gpio_cleanup
 from thermostat.termostat import Thermostat
 from thermostat.ntc import convert_to_temperature
@@ -25,7 +26,7 @@ if __name__ == '__main__':
             else:
                 led.off()
             print("{:%Y %m %d %H:%M:%S} {:04d} {:.1f} {}".format(dt.now(), value, temperature, heat))
-            #sleep(1)
+            sleep(1)
 
     finally:
         gpio_cleanup()
