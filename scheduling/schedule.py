@@ -86,7 +86,8 @@ def read_schedule(file):
     schedule = Schedule()
     for day, events in data.items():
         for event_data in events:
-            event = Event(*[int(e) for e in event_data.split(',')])
+            time, temperature = event_data.split(',')
+            event = Event.set(time, temperature)
             schedule.add_event(day, event)
     return schedule
 
