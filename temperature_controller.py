@@ -35,7 +35,10 @@ class TemperatureController(object):
         self.thermostat.set_target(target_temperature)
 
     def get_scheduled_temperature(self):
-        return self.schedule.get_temperature_for(now())
+        return self.get_scheduled_temperature_for(now())
+
+    def get_scheduled_temperature_for(self, a_datetime):
+        return self.schedule.get_temperature_for(a_datetime)
 
     def schedule_days(self):
         return self.schedule.schedule

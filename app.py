@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import json
 from flask import Flask, render_template, request, url_for, redirect
-from scheduling.timeutils import now, weekstart, event_in_week, time_to_seconds, time_to_minutes
+from scheduling.timeutils import now, weekstart, event_time_in_week, time_to_seconds, time_to_minutes, minute_prior_to_event
 from temperature_controller import TemperatureController
 
 
@@ -113,7 +113,9 @@ def send_schedule():
     week_start = weekstart(now())
     for day in tc.schedule_days():
         for time, event in tc.schedule_day_events(day):
-            dt = event_in_week(week_start, day, event)
+            dt = event_time_in_week(week_start, day, event)
+            prior = minute_prior_to_event(week_start, day, event)
+            serie.append((prior, tc.get_scheduled_temperature_for(prior)))
             serie.append((dt, event.temperature))
     series_as_json = series_to_json([serie, current])
 
