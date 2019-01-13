@@ -2,7 +2,7 @@
 import json
 from flask import Flask, render_template, request, url_for, redirect
 from scheduling.timeseries import series_to_json
-from scheduling.timeutils import time_to_seconds
+from scheduling.timeutils import now, time_to_seconds
 from scheduling.week import Week
 from temperature_controller import TemperatureController
 
@@ -26,7 +26,14 @@ app = Flask(__name__)
 @app.route('/', methods=['GET'])
 def show_schedule():
     tc.set_target_from_schedule()
-    return render_template('schedule.html', schedule=tc.schedule, date_time=time_to_seconds())
+    return render_template(
+        'schedule.html',
+        schedule=tc.schedule,
+        date_time=time_to_seconds(),
+        target=tc.get_formatted_target(),
+        heating=tc.is_heating(),
+        temperature= tc.get_formatted_temperature()
+    )
 
 
 @app.route('/status', methods=['GET'])
@@ -102,6 +109,9 @@ def send_schedule():
             prior = week.minute_prior_to_event(day, event)
             serie.append((prior, tc.get_scheduled_temperature_for(prior)))
             serie.append((dt, event.temperature))
+
+    current.append((now(), tc.get_temperature()))
+
     series_as_json = series_to_json([serie, current])
 
     return app.response_class(
