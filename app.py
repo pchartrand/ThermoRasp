@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import json
 from flask import Flask, render_template, request, url_for, redirect
-from scheduling.timeutils import now, weekstart, event_time_in_week, time_to_seconds, time_to_minutes, minute_prior_to_event
+from scheduling.timeseries import series_to_json
+from scheduling.timeutils import time_to_seconds
+from scheduling.week import Week
 from temperature_controller import TemperatureController
 
 
@@ -19,23 +21,6 @@ tc = TemperatureController(
     INITIAL_SCHEDULE_FILE
 )
 app = Flask(__name__)
-
-
-def series_to_json(series):
-    as_json = []
-    for n, serie in enumerate(series):
-        serie_as_json = []
-        for point in serie:
-            date_value = time_to_minutes(point[0])
-            value = round(point[1], 1)
-            serie_as_json.append(
-                dict(
-                    date=date_value,
-                    value=value
-                )
-            )
-        as_json.append(serie_as_json)
-    return as_json
 
 
 @app.route('/', methods=['GET'])
@@ -110,11 +95,11 @@ def show_temperature():
 def send_schedule():
     serie = []
     current = []
-    week_start = weekstart(now())
+    week = Week()
     for day in tc.schedule_days():
         for time, event in tc.schedule_day_events(day):
-            dt = event_time_in_week(week_start, day, event)
-            prior = minute_prior_to_event(week_start, day, event)
+            dt = week.event_time_in_week(day, event)
+            prior = week.minute_prior_to_event(day, event)
             serie.append((prior, tc.get_scheduled_temperature_for(prior)))
             serie.append((dt, event.temperature))
     series_as_json = series_to_json([serie, current])
