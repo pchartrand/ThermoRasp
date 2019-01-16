@@ -20,6 +20,10 @@ tc = TemperatureController(
     RELAY_GPIO_PIN,
     INITIAL_SCHEDULE_FILE
 )
+
+def round(val):
+    return "{:.1f}".format(val)
+
 app = Flask(__name__)
 
 
@@ -30,9 +34,9 @@ def show_schedule():
         'schedule.html',
         schedule=tc.schedule,
         date_time=time_to_seconds(),
-        target="{:.1f}".format(tc.target_temperature),
+        target=round(tc.target_temperature),
         heating=tc.heating,
-        temperature=  "{:.1f}".format(tc.current_temperature)
+        temperature=  round(tc.current_temperature)
     )
 
 
@@ -40,9 +44,9 @@ def show_schedule():
 def show_status():
     return app.response_class(
         response=json.dumps(
-            {"target": "{:.1f}".format(tc.target_temperature),
+            {"target": round(tc.target_temperature),
              "heating": tc.heating,
-             "temperature": "{:.1f}".format(tc.current_temperature)
+             "temperature": round(tc.current_temperature)
              }
         ),
         status=200,
@@ -53,7 +57,7 @@ def show_status():
 @app.route('/target', methods=['GET'])
 def show_target():
     return app.response_class(
-        response=json.dumps({"target": "{:.1f}".format(tc.target_temperature)}),
+        response=json.dumps({"target": round(tc.target_temperature)}),
         status=200,
         mimetype='application/json'
     )
@@ -88,7 +92,7 @@ def check():
 def show_temperature():
     return app.response_class(
         response=json.dumps(
-            {"temperature":  "{:.1f}".format(tc.current_temperature)}
+            {"temperature":  round(tc.current_temperature)}
         ),
         status=200,
         mimetype='application/json'
