@@ -30,9 +30,9 @@ def show_schedule():
         'schedule.html',
         schedule=tc.schedule,
         date_time=time_to_seconds(),
-        target=tc.get_formatted_target(),
-        heating=tc.is_heating(),
-        temperature= tc.get_formatted_temperature()
+        target="{:.1f}".format(tc.target_temperature),
+        heating=tc.heating,
+        temperature=  "{:.1f}".format(tc.current_temperature)
     )
 
 
@@ -40,9 +40,9 @@ def show_schedule():
 def show_status():
     return app.response_class(
         response=json.dumps(
-            {"target": tc.get_formatted_target(),
-             "heating": tc.is_heating(),
-             "temperature": tc.get_formatted_temperature()
+            {"target": "{:.1f}".format(tc.target_temperature),
+             "heating": tc.heating,
+             "temperature": "{:.1f}".format(tc.current_temperature)
              }
         ),
         status=200,
@@ -53,7 +53,7 @@ def show_status():
 @app.route('/target', methods=['GET'])
 def show_target():
     return app.response_class(
-        response=json.dumps({"target": tc.get_formatted_target()}),
+        response=json.dumps({"target": "{:.1f}".format(tc.target_temperature)}),
         status=200,
         mimetype='application/json'
     )
@@ -62,7 +62,7 @@ def show_target():
 @app.route('/target', methods=['PUT'])
 def set_target():
     temperature = request.json.get('target', tc.thermostat.target)
-    tc.set_target_temperature(float(temperature))
+    tc.target_temperature = float(temperature)
     return redirect(url_for('show_target'))
 
 
@@ -70,7 +70,7 @@ def set_target():
 def show_heating():
     return app.response_class(
         response=json.dumps(
-            {"heating": tc.is_heating()}
+            {"heating": tc.heating}
         ),
         status=200,
         mimetype='application/json'
@@ -80,10 +80,7 @@ def show_heating():
 @app.route('/heating', methods=['POST'])
 def check():
     #tc.set_target_from_schedule()
-    if tc.should_heat():
-        tc.start_heating()
-    else:
-        tc.stop_heating()
+    tc.heating = True if tc.should_heat() else False
     return redirect(url_for('show_status'))
 
 
@@ -91,7 +88,7 @@ def check():
 def show_temperature():
     return app.response_class(
         response=json.dumps(
-            {"temperature": tc.get_formatted_temperature()}
+            {"temperature":  "{:.1f}".format(tc.current_temperature)}
         ),
         status=200,
         mimetype='application/json'
@@ -103,14 +100,14 @@ def send_schedule():
     serie = []
     current = []
     week = Week()
-    for day in tc.schedule_days():
+    for day in tc.schedule_days:
         for time, event in tc.schedule_day_events(day):
             dt = week.event_time_in_week(day, event)
             prior = week.minute_prior_to_event(day, event)
-            serie.append((prior, tc.get_scheduled_temperature_for(prior)))
+            serie.append((prior, tc.scheduled_temperature_for(prior)))
             serie.append((dt, event.temperature))
 
-    current.append((now(), tc.get_temperature()))
+    current.append((now(), tc.current_temperature))
 
     series_as_json = series_to_json([serie, current])
 

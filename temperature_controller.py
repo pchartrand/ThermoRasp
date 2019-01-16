@@ -19,27 +19,39 @@ class TemperatureController(object):
     def gpio_cleanup(self):
         gpio_cleanup()
 
-    def get_target(self):
+    @property
+    def target_temperature(self):
         return self.thermostat.target
 
-    def get_formatted_target(self):
-        return "{:.1f}".format(self.get_target())
-
-    def is_heating(self):
-        return self.thermostat.heating
-
-    def should_heat(self):
-        return self.thermostat.check(self.get_temperature())
-
-    def set_target_temperature(self, target_temperature):
+    @target_temperature.setter
+    def target_temperature(self, target_temperature):
         self.thermostat.set_target(target_temperature)
 
-    def get_scheduled_temperature(self):
-        return self.get_scheduled_temperature_for(now())
+    @property
+    def current_temperature(self):
+        return convert_to_temperature(self.adc.read())
 
-    def get_scheduled_temperature_for(self, a_datetime):
+    def current_temperature_formatted(self):
+        return "{:.1f}".format(self.current_temperature)
+
+    @property
+    def heating(self):
+        return self.thermostat.heating
+
+    @heating.setter
+    def heating(self, heat):
+        self.heater.on() if heat else self.heater.off()
+
+    def should_heat(self):
+        return self.thermostat.check(self.current_temperature)
+
+    def scheduled_temperature(self):
+        return self.scheduled_temperature_for(now())
+
+    def scheduled_temperature_for(self, a_datetime):
         return self.schedule.get_temperature_for(a_datetime)
 
+    @property
     def schedule_days(self):
         return self.schedule.schedule
 
@@ -47,24 +59,10 @@ class TemperatureController(object):
         return self.schedule.schedule[day].items()
 
     def set_target_from_schedule(self):
-        target_temperature = self.get_scheduled_temperature()
-        if target_temperature != self.get_target():
+        target_temperature = self.scheduled_temperature()
+        if target_temperature != self.target_temperature:
             print("setting temperature to {}".format(target_temperature))
-            self.set_target_temperature(target_temperature)
-
-    def get_temperature(self):
-        return convert_to_temperature(self.adc.read())
-
-    def get_formatted_temperature(self):
-        return "{:.1f}".format(self.get_temperature())
-
-    def start_heating(self):
-        self.heater.on()
-
-    def stop_heating(self):
-        self.heater.off()
-
-
+            self.target_temperature = target_temperature
 
 
 
