@@ -15,12 +15,18 @@ class TemperatureController(object):
         self.adc = TLC(adc_gpio_pin)
         self.heater = Relay(relay_gpio_pin)
         self.schedule = read_schedule(os.path.join(os.path.dirname(__file__), schedule_file))
+        self.automatic = True
 
     def setup(self):
         gpio_setup()
 
     def cleanup(self):
         gpio_cleanup()
+
+    def check(self):
+        if self.automatic:
+            self.set_target_from_schedule()
+        self.heating = True if self.should_heat() else False
 
     @property
     def target_temperature(self):

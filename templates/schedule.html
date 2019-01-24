@@ -20,9 +20,11 @@
 <div class="container">
         <div class='head'>
             <p class="text-center">
-                {{ temperature }} /
-                {{target}}
-                {% if heating %}ça chauffe{% else %}ça ne chauffe pas{% endif %}
+                Température: {{ temperature }}<br />
+                Cible: {{target}} <br />
+                État: {% if heating %}ça chauffe{% else %}ça ne chauffe pas{% endif %}
+                <br />
+                Mode: {% if automatic %}automatique{% else %}manuel{% endif %}
             </p>
         <div class="content">
             <div class="row">

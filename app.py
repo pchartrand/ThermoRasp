@@ -29,14 +29,14 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def show_schedule():
-    tc.set_target_from_schedule()
     return render_template(
         'schedule.html',
         schedule=tc.schedule,
         date_time=time_to_seconds(),
         target=round(tc.target_temperature),
         heating=tc.heating,
-        temperature=  round(tc.current_temperature)
+        temperature=round(tc.current_temperature),
+        automatic=tc.automatic
     )
 
 
@@ -46,7 +46,8 @@ def show_status():
         response=json.dumps(
             {"target": round(tc.target_temperature),
              "heating": tc.heating,
-             "temperature": round(tc.current_temperature)
+             "temperature": round(tc.current_temperature),
+             "automatic": tc.automatic
              }
         ),
         status=200,
@@ -83,8 +84,7 @@ def show_heating():
 
 @app.route('/heating', methods=['POST'])
 def check():
-    #tc.set_target_from_schedule()
-    tc.heating = True if tc.should_heat() else False
+    tc.check()
     return redirect(url_for('show_status'))
 
 
@@ -97,6 +97,41 @@ def show_temperature():
         status=200,
         mimetype='application/json'
     )
+
+
+@app.route('/automatic', methods=['GET'])
+def automatic():
+    return app.response_class(
+        response=json.dumps(
+            {"automatic": tc.automatic}
+        ),
+        status=200,
+        mimetype='application/json'
+    )
+
+
+@app.route('/automatic', methods=['POST'])
+def set_to_automatic():
+    tc.automatic = True
+    tc.check()
+    return redirect(url_for('show_status'))
+
+@app.route('/manual', methods=['GET'])
+def manual():
+    return app.response_class(
+        response=json.dumps(
+            {"manual": not tc.automatic}
+        ),
+        status=200,
+        mimetype='application/json'
+    )
+
+
+@app.route('/manual', methods=['POST'])
+def set_to_manual():
+    tc.automatic = False
+    tc.check()
+    return redirect(url_for('show_status'))
 
 
 @app.route('/schedule', methods=['GET'])
