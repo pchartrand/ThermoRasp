@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, url_for, redirect
 from scheduling.timeseries import series_to_json
 from scheduling.timeutils import now, time_to_seconds
 from scheduling.week import Week
-from temperature_controller import TemperatureController
+from thermostat.temperature_controller import TemperatureController
 
 
 INITIAL_TARGET_TEMPERATURE = 20
@@ -126,4 +126,4 @@ if __name__ == '__main__':
     try:
         app.run(host='0.0.0.0', debug=True)
     finally:
-        tc.gpio_cleanup()
+        tc.cleanup()

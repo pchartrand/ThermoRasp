@@ -10,13 +10,16 @@ from thermostat.termostat import Thermostat
 
 class TemperatureController(object):
     def __init__(self, target_temperature, hysteresis, adc_gpio_pin, relay_gpio_pin, schedule_file):
-        gpio_setup()
+        self.setup()
         self.thermostat = Thermostat(target_temperature, hysteresis)
         self.adc = TLC(adc_gpio_pin)
         self.heater = Relay(relay_gpio_pin)
         self.schedule = read_schedule(os.path.join(os.path.dirname(__file__), schedule_file))
 
-    def gpio_cleanup(self):
+    def setup(self):
+        gpio_setup()
+
+    def cleanup(self):
         gpio_cleanup()
 
     @property
