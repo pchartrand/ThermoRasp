@@ -1,3 +1,3 @@
 #!/bin/bash
-nohup python app.py > /dev/null &
+nohup python3 app.py > /dev/null &
 

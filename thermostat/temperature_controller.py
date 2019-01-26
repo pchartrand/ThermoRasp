@@ -2,8 +2,9 @@ import os
 
 from scheduling.schedule import read_schedule
 from scheduling.timeutils import now
-from thermostat.adc import gpio_setup, gpio_cleanup, TLC
-from thermostat.ntc import convert_to_temperature
+from thermostat.adc.tlc1453 import gpio_setup, gpio_cleanup
+from thermostat.adc.ads1015 import ADS
+from thermostat.ntc import convert_value_to_temperature
 from thermostat.relay import Relay
 from thermostat.termostat import Thermostat
 
@@ -12,7 +13,7 @@ class TemperatureController(object):
     def __init__(self, target_temperature, hysteresis, adc_gpio_pin, relay_gpio_pin, schedule_file):
         self.setup()
         self.thermostat = Thermostat(target_temperature, hysteresis)
-        self.adc = TLC(adc_gpio_pin)
+        self.adc = ADS()
         self.heater = Relay(relay_gpio_pin)
         self.schedule = read_schedule(os.path.join(os.path.dirname(__file__), schedule_file))
         self.automatic = True
@@ -38,7 +39,7 @@ class TemperatureController(object):
 
     @property
     def current_temperature(self):
-        return convert_to_temperature(self.adc.read())
+        return convert_value_to_temperature(self.adc.read())
 
     def current_temperature_formatted(self):
         return "{:.1f}".format(self.current_temperature)

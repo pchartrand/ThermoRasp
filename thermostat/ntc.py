@@ -1,3 +1,6 @@
+REFERENCE_VOLTS = 5.04
+
+
 def convert_to_temperature(value):
     '''
     :value is an integer between 0 and 1023.
@@ -14,10 +17,18 @@ def convert_to_temperature(value):
 
     https://en.wikipedia.org/wiki/Steinhart%E2%80%93Hart_equation
     '''
-    REFERENCE_VOLTS = 5.04
+    volts = (value / 1023.0) * REFERENCE_VOLTS;
+    return convert_volts_to_temperature(volts)
+
+
+def convert_volts_to_temperature(volts):
     A = 3.296
     B = -22.378
     C = 70.951
     D = -49.382
-    volts = (value / 1023.0) * REFERENCE_VOLTS;
-    return A*volts**3 + B*volts**2 + C*volts + D
+    return A * volts ** 3 + B * volts ** 2 + C * volts + D
+
+
+def convert_value_to_temperature(value):
+    volts = (value / 1658.0) * REFERENCE_VOLTS
+    return convert_volts_to_temperature(volts)

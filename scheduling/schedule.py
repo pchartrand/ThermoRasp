@@ -70,7 +70,7 @@ class Schedule(object):
         yesterday = dow - 1
         if yesterday == -1:
             yesterday = 6
-        previous_event = Event(0, 0, self.schedule[yesterday].values()[-1].temperature)
+        previous_event = Event(0, 0, tuple(self.schedule[yesterday].values())[-1].temperature)
         for event_time in self.schedule[dow]:
             current_event = self.schedule[dow][event_time]
             if current_event.is_before((60*hour + minute), previous_event):

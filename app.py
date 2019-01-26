@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import json
 from flask import Flask, render_template, request, url_for, redirect
 from scheduling.timeseries import series_to_json
