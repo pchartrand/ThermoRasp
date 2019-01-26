@@ -4,7 +4,7 @@ from gpiozero import LED
 from datetime import datetime as dt
 
 from time import sleep
-from thermostat.adc import TLC, gpio_setup, gpio_cleanup
+from thermostat.adc.tlc1453 import TLC, gpio_setup, gpio_cleanup
 from thermostat.termostat import Thermostat
 from thermostat.ntc import convert_to_temperature
 from thermostat.relay import LED

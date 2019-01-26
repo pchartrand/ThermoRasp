@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 class TestsTemperatureController(TestCase):
     RELAY_GPIO_PIN = 17
     ADC_GPIO_PIN = 6
@@ -19,7 +19,7 @@ class TestsTemperatureController(TestCase):
 
     @patch('RPi.GPIO')
     def test_i_can_mock_adc_to_bypass_gpio(self, MockGPIO):
-        from thermostat.adc import TLC
+        from thermostat.adc.tlc1453 import TLC
         adc = TLC(self.ADC_GPIO_PIN)
         adc.read = MagicMock(return_value=512)
 
@@ -29,7 +29,7 @@ class TestsTemperatureController(TestCase):
 
     @patch('RPi.GPIO')
     @patch('thermostat.relay.Relay')
-    @patch('thermostat.adc.TLC')
+    @patch('thermostat.adc.ads1015.ADS')
     def test_i_can_create_a_temp_controller_and_fake_io(self, MockGPIO, MockTLD, MockRelay):
         INITIAL_TARGET_TEMPERATURE = 20
         HYSTERESIS = 0.5
@@ -51,7 +51,7 @@ class TestsTemperatureController(TestCase):
 
         assert tc.target_temperature == INITIAL_TARGET_TEMPERATURE
 
-        tc.adc.read = MagicMock(return_value=322)
+        tc.adc.read = MagicMock(return_value=522)
 
         assert round(tc.current_temperature) == 20, tc.current_temperature
 
