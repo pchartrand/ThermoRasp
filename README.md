@@ -1,19 +1,13 @@
 # ThermoRasp
-Thermostat made with a ARPI600 board on a raspberrypi 2.
+Thermostat made with a ADS1015 12 bits ADC on a raspberrypi 2.
 
 ## Requirements:
 
-An [ARPI600](https://www.waveshare.com/wiki/ARPI600) or a [TLC1543 ADC](https://www.waveshare.com/wiki/TLC1543_ADC_Board) board.
+An [ADS1015](https://www.adafruit.com/product/1083) board.
 
 A 310 NTC thermistor and a 5k6 resistor for temperature measurement.
 
 A SSRNC-430B solid-state relay with a 68 Ω series resistor for heater control. 
-
-### Note:
-
-If you are using the ARPI600 board, you will need to add a connection between TLC1453 chip select (CS) pin and GPIO 
-pin 19 to allow accurate temperature measurements. CS is not connected to the ARPI600 
-board, so the measured values are erratic.
 
 ## Principle of operation:
 
@@ -54,6 +48,10 @@ To check current status (temperature, target, heating):
 
 `./status.sh`
 
+To change control mode to manual:
+
+`./manual.sh`
+
 To set thermostat to another target temperature, say 21.5:
 
 `./set.sh 21.5`
@@ -62,5 +60,8 @@ To force evaluation of current temperature:
 
 `./check.sh`
 
+To change control mode to automatic:
+
+`./automatic.sh`
 
  
