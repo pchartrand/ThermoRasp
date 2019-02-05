@@ -13,6 +13,8 @@ ADC_GPIO_PIN = 6
 RELAY_GPIO_PIN = 17
 INITIAL_SCHEDULE_FILE = 'schedule.yml'
 
+previous_measurements = []
+
 tc = TemperatureController(
     INITIAL_TARGET_TEMPERATURE,
     HYSTERESIS,
@@ -88,6 +90,12 @@ def check():
     return redirect(url_for('show_status'))
 
 
+@app.route('/store', methods=['POST'])
+def store_temperature():
+    previous_measurements.append((now(), tc.current_temperature))
+    return redirect(url_for('show_status'))
+
+
 @app.route('/temperature', methods=['GET'])
 def show_temperature():
     return app.response_class(
@@ -137,7 +145,6 @@ def set_to_manual():
 @app.route('/schedule', methods=['GET'])
 def send_schedule():
     serie = []
-    current = []
     week = Week()
     for day in tc.schedule_days:
         for time, event in tc.schedule_day_events(day):
@@ -146,9 +153,7 @@ def send_schedule():
             serie.append((prior, tc.scheduled_temperature_for(prior)))
             serie.append((dt, event.temperature))
 
-    current.append((now(), tc.current_temperature))
-
-    series_as_json = series_to_json([serie, current])
+    series_as_json = series_to_json([serie, previous_measurements])
 
     return app.response_class(
         response=json.dumps(series_as_json),
