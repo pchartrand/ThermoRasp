@@ -5,6 +5,9 @@ from scheduling.timeseries import series_to_json
 from scheduling.timeutils import now, time_to_seconds
 from scheduling.week import Week
 from thermostat.temperature_controller import TemperatureController
+from thermostat.measurements import Measurements
+
+
 
 
 INITIAL_TARGET_TEMPERATURE = 20
@@ -12,8 +15,8 @@ HYSTERESIS = 0.5
 ADC_GPIO_PIN = 6
 RELAY_GPIO_PIN = 17
 INITIAL_SCHEDULE_FILE = 'schedule.yml'
-
-previous_measurements = []
+MAX_HISTORY = 2 * 24 * 7
+previous_measurements = Measurements(MAX_HISTORY)
 
 tc = TemperatureController(
     INITIAL_TARGET_TEMPERATURE,
@@ -92,7 +95,7 @@ def check():
 
 @app.route('/store', methods=['POST'])
 def store_temperature():
-    previous_measurements.append((now(), tc.current_temperature))
+    previous_measurements.add((now(), tc.current_temperature))
     return redirect(url_for('show_status'))
 
 
