@@ -1,5 +1,5 @@
-var app = new Vue({
-    el: '#app',
+var statusComponent = new Vue({
+    el: '#status',
     data: {
         'temperature': '',
         'target': '',
@@ -11,10 +11,10 @@ var app = new Vue({
         axios.get('/status')
         .then(function (response) {
         // handle success
-        app.$data.temperature = response.data.temperature
-        app.$data.target = response.data.target
-        app.$data.heating = response.data.heating
-        app.$data.automatic = response.data.automatic
+        statusComponent.$data.temperature = response.data.temperature
+        statusComponent.$data.target = response.data.target
+        statusComponent.$data.heating = response.data.heating
+        statusComponent.$data.automatic = response.data.automatic
         //console.log(response.data);
         })
         .catch(function (error) {
@@ -27,5 +27,5 @@ var app = new Vue({
       }
     }
 });
-app.poll();
+statusComponent.poll();
 

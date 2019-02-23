@@ -17,14 +17,14 @@
 
 <div class="container">
         <div class='head'>
-            <p class="text-center" id="app">
+            <p class="text-center" id="status">
                 {% raw %}
                 Température: {{ temperature }}<br />
                 Cible: {{target}} <br />
                 État: {{ heating ? 'ça chauffe' : 'ça ne chauffe pas' }}<br />
                 Mode: {{automatic ? 'automatique' : 'manuel'}}<br />
                 {% endraw %}
-                <button onclick="app.poll()">mise à jour</button> <br />
+                <button onclick="statusComponent.poll()">mise à jour</button> <br />
 
             </p>
         <div class="content">
