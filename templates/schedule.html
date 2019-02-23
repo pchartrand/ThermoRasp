@@ -9,6 +9,7 @@
     <script src='static/js/libs/jquery/3.1.0/jquery.min.js'></script>
     <script src="static/js/libs/d3js/d3.v4.min.js"></script>
     <script src='static/js/libs/metricsgraphics.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 <body>
@@ -16,12 +17,15 @@
 
 <div class="container">
         <div class='head'>
-            <p class="text-center">
+            <p class="text-center" id="app">
+                {% raw %}
                 Température: {{ temperature }}<br />
                 Cible: {{target}} <br />
-                État: {% if heating %}ça chauffe{% else %}ça ne chauffe pas{% endif %}
-                <br />
-                Mode: {% if automatic %}automatique{% else %}manuel{% endif %}
+                État: {{ heating ? 'ça chauffe' : 'ça ne chauffe pas' }}<br />
+                Mode: {{automatic ? 'automatique' : 'manuel'}}<br />
+                {% endraw %}
+                <button onclick="app.poll()">mise à jour</button> <br />
+
             </p>
         <div class="content">
             <div class="row">
@@ -114,21 +118,7 @@
             });
         });
         </script>
-        <script>
-            axios.get('/status')
-              .then(function (response) {
-                // handle success
-                console.log(response.data.temperature);
-              })
-              .catch(function (error) {
-                // handle error
-                console.log(error);
-              })
-              .then(function () {
-                // always executed
-              });
-
-        </script>
+    <script src="static/js/components.js" ></script>
     </div>
 </body>
 </html>
