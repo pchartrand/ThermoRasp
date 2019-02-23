@@ -20,4 +20,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-@reboot cd Gpio && ./startup.sh  && ./poll.sh > poll.log
+@reboot cd Gpio && ./startup && ./poll && ./store
