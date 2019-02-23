@@ -3,3 +3,8 @@ svg {
     opacity: 1;
     background-color: white;
 }
+
+p#status {
+    border: 1px solid black;
+    width: 33%;
+}

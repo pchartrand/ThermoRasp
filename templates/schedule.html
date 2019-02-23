@@ -17,10 +17,12 @@
 
 <div class="container">
         <div class='head'>
-            <p class="text-center" id="status">
+            <div class="row">
+             <div class="col-sm-4"></div>
+             <div class="col-sm-4 text-center" id="status">
                 {% raw %}
                 Température: <strong>{{ temperature }}</strong>
-                <button onclick="statusComponent.poll()">rafraîchir</button> <br />
+                <button onclick="statusComponent.poll()">rafraîchir les données</button> <br />
                 État:  <strong>{{ heating ? 'ça chauffe' : 'ça ne chauffe pas' }}</strong><br />
                 Mode:<label for="automatic">{{automatic ? 'automatique' : 'manuel'}}
                 <input id="automatic" type="checkbox" v-model="automatic" onChange="statusComponent.setMode()"/>
@@ -35,8 +37,10 @@
                 <button onclick="statusComponent.poll()">rafraîchir</button>
                 {% endraw %}
 
-
-            </p>
+             </div>
+             <div class="col-sm-4"></div>
+            </div>
+        </div>
         <div class="content">
             <div class="row">
              <div class="col-sm-1">
