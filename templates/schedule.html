@@ -6,13 +6,10 @@
     <link href='static/css/bootstrap/3.2.0/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='static/css/metricsgraphics.css' rel='stylesheet' type='text/css'>
     <link href='static/css/temperatures.css' rel='stylesheet' type='text/css'>
-
-    {% if use_jquery %}
-    <!-- jquery is only used to display the graph description -->
     <script src='static/js/libs/jquery/3.1.0/jquery.min.js'></script>
-    {%endif %}
     <script src="static/js/libs/d3js/d3.v4.min.js"></script>
     <script src='static/js/libs/metricsgraphics.min.js'></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 <body>
 
@@ -116,6 +113,21 @@
                 european_clock: true
             });
         });
+        </script>
+        <script>
+            axios.get('/status')
+              .then(function (response) {
+                // handle success
+                console.log(response.data.temperature);
+              })
+              .catch(function (error) {
+                // handle error
+                console.log(error);
+              })
+              .then(function () {
+                // always executed
+              });
+
         </script>
     </div>
 </body>
