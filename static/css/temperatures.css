@@ -1,10 +1,15 @@
 svg {
-    border: 1px solid black;
+    border: 1px solid blue;
     opacity: 1;
     background-color: white;
 }
 
-p#status {
-    border: 1px solid black;
+div#status {
+    border: 1px solid blue;
     width: 33%;
+    background-color: lightgrey;
+}
+
+input#target{
+width: 100px;
 }
