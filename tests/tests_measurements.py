@@ -20,8 +20,8 @@ class MeasurementsTests(TestCase):
     def test_can_add_a_measurement(self):
         di = NextMinuteIterator()
         m = Measurements(10)
-        m.add(dict(time=di.next(), value=10.0))
-        m.add(dict(time=di.next(), value=11.0))
+        m.add((di.next(), 10.0))
+        m.add((di.next(), 11.0))
 
         self.assertEqual(2, len(m))
 
@@ -32,12 +32,12 @@ class MeasurementsTests(TestCase):
         d2 = di.next()
         d3 = di.next()
         m = Measurements(2)
-        m.add(dict(time=d1, value=10.0))
-        m.add(dict(time=d2, value=11.0))
-        m.add(dict(time=d3, value=12.0))
+        m.add((d1, 10.0))
+        m.add((d2, 11.0))
+        m.add((d3, 12.0))
 
         self.assertEqual(2, len(m))
-        self.assertEqual(dict(time=d2,value=11.0), m.measurements[0])
+        self.assertEqual((d2,11.0), m.measurements[0])
 
 
     def test_can_iterate_on_measurements(self):
@@ -45,9 +45,9 @@ class MeasurementsTests(TestCase):
         d1 = di.next()
         d2 = di.next()
         d3 = di.next()
-        m1 = dict(time=d1, value=10.0)
-        m2 = dict(time=d2, value=11.0)
-        m3 = dict(time=d3, value=12.0)
+        m1 = (d1, 10.0)
+        m2 = (d2, 11.0)
+        m3 = (d3, 12.0)
 
         m = Measurements(3)
         m.add(m1)
@@ -67,11 +67,11 @@ class MeasurementsTests(TestCase):
         now = datetime.datetime.now()
         m = Measurements(5)
         monday = m.week_start()
-        m1 = dict(time=monday - datetime.timedelta(days=1), value=10)
-        m2 = dict(time=monday, value=11)
-        m3 = dict(time=monday +  datetime.timedelta(hours=1), value=12)
-        m4 = dict(time=now, value=13)
-        m5 = dict(time=now + datetime.timedelta(days=5), value=14)
+        m1 = (monday - datetime.timedelta(days=1), 10)
+        m2 = (monday, 11)
+        m3 = (monday +  datetime.timedelta(hours=1), 12)
+        m4 = (now, 13)
+        m5 = (now + datetime.timedelta(days=5), 14)
 
         m.add(m1)
         m.add(m2)

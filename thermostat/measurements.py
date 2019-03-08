@@ -17,7 +17,7 @@ class Measurements(object):
     def delete_last_week(self):
         monday = self.week_start()
         for measurement in self.measurements[:]:
-            if measurement['time'] < monday:
+            if measurement[0] < monday:
                 self.measurements.remove(measurement)
 
     def add(self, measurement):

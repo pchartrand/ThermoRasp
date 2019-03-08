@@ -95,7 +95,7 @@ def check():
 
 @app.route('/store', methods=['POST'])
 def store_temperature():
-    previous_measurements.add(dict(time=now(), value=tc.current_temperature))
+    previous_measurements.add(now(), tc.current_temperature)
     return redirect(url_for('show_status'))
 
 
