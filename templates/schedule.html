@@ -1,145 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Thermostat</title>
-    <link href='static/css/bootstrap/3.2.0/bootstrap.min.css' rel='stylesheet' type='text/css'>
-    <link href='static/css/metricsgraphics.css' rel='stylesheet' type='text/css'>
-    <link href='static/css/temperatures.css' rel='stylesheet' type='text/css'>
-    <script src='static/js/libs/jquery/3.1.0/jquery.min.js'></script>
-    <script src="static/js/libs/d3js/d3.v4.min.js"></script>
-    <script src='static/js/libs/metricsgraphics.min.js'></script>
-    <script src="static/js/libs/vue.min.js"></script>
-    <script src="static/js/libs/axios.min.js"></script>
-</head>
-<body>
-
-
-<div class="container">
-        <div class='head'>
-            <div class="row">
-                <div class="col-sm-4 text-center"><h1>Thermostat</h1></div>
+    <head>
+        <meta charset="UTF-8">
+        <title>Thermostat</title>
+        <link href='static/css/bootstrap/3.2.0/bootstrap.min.css' rel='stylesheet' type='text/css'>
+        <link href='static/css/metricsgraphics.css' rel='stylesheet' type='text/css'>
+        <link href='static/css/temperatures.css' rel='stylesheet' type='text/css'>
+        <script src='static/js/libs/jquery/3.1.0/jquery.min.js'></script>
+        <script src="static/js/libs/d3js/d3.v4.min.js"></script>
+        <script src='static/js/libs/metricsgraphics.min.js'></script>
+        <script src="static/js/libs/vue.min.js"></script>
+        <script src="static/js/libs/axios.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="page-header">
+                <h1 class="text-center">ThermoRasp</h1>
             </div>
-            <div class="row">
-             <div class="col-sm-3 text-center" id="status">
-                {% raw %}
-                Température: <strong>{{ temperature }}</strong>
-                <br />
-                État:  <strong>{{ heating ? 'ça chauffe' : 'ça ne chauffe pas' }}</strong><br />
-                Mode:<label for="automatic">{{automatic ? 'automatique' : 'manuel'}}
-                <input id="automatic" type="checkbox" v-model="automatic" onChange="statusComponent.setMode()"/>
-                </label>
-                <br />
-                Temp. cible:
-                <input id="target"
-                       size="4"
-                       type="number"
-                       step="0.5"
-                       min="5.0"
-                       max="25.0"
-                       v-model="target"
-                       :disabled="automatic == 1 ? true : false"
-                       onChange="statusComponent.setTarget()"/>
-                 <br />
-                <button onclick="statusComponent.poll()">rafraîchir les données</button>
-                {% endraw %}
-
-             </div>
-             <div class="col-sm-9"></div>
-            </div>
-        </div>
-        <div class="content">
-            <div class="row">
-             <div class="col-sm-1">
-                <h3>Lundi</h3>
-                    <p>
-                        {% for event in schedule.monday() %}
+            <div class="content">
+                <div class="row">
+                    <div class="col-sm-3 text-center" id="status">
+                        {% raw %}
+                        Température: <strong>{{ temperature }}</strong>
+                        <br />
+                        État:  <strong>{{ heating ? 'ça chauffe' : 'ça ne chauffe pas' }}</strong><br />
+                        Mode:<label for="automatic">{{automatic ? 'automatique' : 'manuel'}}
+                        <input id="automatic" type="checkbox" v-model="automatic" onChange="statusComponent.setMode()"/>
+                        </label>
+                        <br />
+                        Temp. cible:
+                        <input id="target"
+                               size="4"
+                               type="number"
+                               step="0.5"
+                               min="5.0"
+                               max="25.0"
+                               v-model="target"
+                               :disabled="automatic == 1 ? true : false"
+                               onChange="statusComponent.setTarget()"/>
+                         <br />
+                        <button onclick="statusComponent.poll()">rafraîchir les données</button>
+                        {% endraw %}
+                    </div>
+                    <div class="col-sm-1">
+                        <h3>Lundi</h3>
+                        <p>
+                            {% for event in schedule.monday() %}
+                            {{ event.0 }} {{ event.1.temperature }}<br />
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="col-sm-1">
+                        <h3>Mardi</h3>
+                        <p>
+                            {% for event in schedule.tuesday() %}
+                            {{ event.0 }} {{ event.1.temperature }}<br />
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="col-sm-1">
+                        <h3>Mercredi</h3>
+                        <p>
+                            {% for event in schedule.wednesday() %}
+                            {{ event.0 }} {{ event.1.temperature }}<br />
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="col-sm-1">
+                        <h3>Jeudi</h3>
+                        <p>
+                            {% for event in schedule.thursday() %}
+                            {{ event.0 }} {{ event.1.temperature }}<br />
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="col-sm-1">
+                        <h3>Vendredi</h3>
+                        <p>
+                            {% for event in schedule.friday() %}
                         {{ event.0 }} {{ event.1.temperature }}<br />
                         {% endfor %}
-                    </p>
-                </div>
-                <div class="col-sm-1">
-                <h3>Mardi</h3>
-                <p>
-                    {% for event in schedule.tuesday() %}
-                    {{ event.0 }} {{ event.1.temperature }}<br />
-                    {% endfor %}
-                </p>
-                </div>
-                <div class="col-sm-1">
-                <h3>Mercredi</h3>
-                <p>
-                    {% for event in schedule.wednesday() %}
-                    {{ event.0 }} {{ event.1.temperature }}<br />
-                    {% endfor %}
-                </p>
-
-                </div>
-                <div class="col-sm-1">
-                <h3>Jeudi</h3>
-                <p>
-                    {% for event in schedule.thursday() %}
-                    {{ event.0 }} {{ event.1.temperature }}<br />
-                    {% endfor %}
-                </p>
-
-                </div>
-                <div class="col-sm-1">
-                <h3>Vendredi</h3>
-                <p>
-                    {% for event in schedule.friday() %}
-                {{ event.0 }} {{ event.1.temperature }}<br />
-                {% endfor %}
-                </p>
-                </div>
-                <div class="col-sm-1">
-                <h3>Samedi</h3>
-                <p>
-                    {% for event in schedule.saturday() %}
-                    {{ event.0 }} {{ event.1.temperature }}<br />
-                    {% endfor %}
-                </p>
-                </div>
-                <div class="col-sm-2">
-                <h3>Dimanche</h3>
-                <p>
-                    {% for event in schedule.sunday() %}
-                    {{ event.0 }} {{ event.1.temperature }}<br />
-                    {% endfor %}
-                </p>
-                </div>
+                        </p>
+                    </div>
+                    <div class="col-sm-1">
+                        <h3>Samedi</h3>
+                        <p>
+                            {% for event in schedule.saturday() %}
+                            {{ event.0 }} {{ event.1.temperature }}<br />
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="col-sm-1">
+                        <h3>Dimanche</h3>
+                        <p>
+                            {% for event in schedule.sunday() %}
+                            {{ event.0 }} {{ event.1.temperature }}<br />
+                            {% endfor %}
+                        </p>
+                    </div>
                </div>
-            <div class="row">
-                <div class="col-sm-10 text-center" id="temperatures"> </div>
-            </div>
-            <div class="row">
-                <div class="text-center"><a href="schedule">données</a></div>
+                <div class="row">
+                    <div class="col-sm-1" />
+                    <div class="col-sm-10" id="temperatures">
+                        <a href="schedule">données</a>
+                    </div>
+                    <div class="col-sm-1" />
+                </div>
             </div>
         </div>
-    </div>
         <script language="javascript">
-        d3.json('schedule', function(data) {
-            for (var i = 0; i < data.length; i++) {
-                data[i] = MG.convert.date(data[i], 'date','%Y-%m-%d %H:%M');
-            }
+            d3.json('schedule', function(data) {
+                for (var i = 0; i < data.length; i++) {
+                    data[i] = MG.convert.date(data[i], 'date','%Y-%m-%d %H:%M');
+                }
 
-            MG.data_graphic({
-                title: "Températures {{date_time }}",
-                description: "Chauffage pour la semaine",
-                data: data,
-                width: 1000,
-                height: 600,
-                point_size: 4,
-                target: '#temperatures',
-                legend: [ 'thermostat', 'temperature' ],
-                legend_target: '.legend',
-                //aggregate_rollover: true,
-                colors: ['#00DD00', '#0000DD','#DD0000', '#BB00BB','#00BBBB','#BBBB00'],
-                european_clock: true
+                MG.data_graphic({
+                    title: "Températures {{date_time }}",
+                    description: "Chauffage pour la semaine",
+                    data: data,
+                    width: 1000,
+                    height: 600,
+                    point_size: 4,
+                    target: '#temperatures',
+                    legend: [ 'thermostat', 'température' ],
+                    legend_target: '.legend',
+                    //aggregate_rollover: true,
+                    colors: ['#00DD00', '#0000DD','#DD0000', '#BB00BB','#00BBBB','#BBBB00'],
+                    european_clock: true
+                });
             });
-        });
         </script>
-    <script src="static/js/components.js" ></script>
-    </div>
-</body>
+        <script src="static/js/components.js" ></script>
+    </body>
 </html>
