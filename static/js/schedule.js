@@ -4,8 +4,9 @@ function drawSchedule(){
             data[i] = MG.convert.date(data[i], 'date','%Y-%m-%d %H:%M');
         }
 
+        var d = new Date;
         MG.data_graphic({
-            title: "Températures 2019-03-08 16:17:16",
+            title: "Températures au " + d.toLocaleString(),
             description: "Chauffage pour la semaine",
             data: data,
             width: 1000,
